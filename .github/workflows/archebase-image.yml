@@ -63,7 +63,7 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/librechat:archebase
             ghcr.io/${{ github.repository_owner }}/librechat:${{ github.sha }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           target: node
           build-args: |
             BUILD_COMMIT=${{ env.BUILD_COMMIT }}
