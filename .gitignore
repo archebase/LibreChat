@@ -40,6 +40,11 @@ public/main.js
 public/main.js.map
 public/main.js.LICENSE.txt
 client/public/images/
+!client/public/images/
+!client/public/images/icon-square.png
+!client/public/images/logo-black.png
+!client/public/images/logo-color.png
+!client/public/images/logo-white.png
 client/public/main.js
 client/public/main.js.map
 client/public/main.js.LICENSE.txt

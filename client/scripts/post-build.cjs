@@ -3,6 +3,8 @@ const fs = require('fs-extra');
 async function postBuild() {
   try {
     await fs.copy('public/assets', 'dist/assets');
+    await fs.copy('public/favicon.ico', 'dist/favicon.ico');
+    await fs.copy('public/images', 'dist/images');
     await fs.copy('public/robots.txt', 'dist/robots.txt');
     console.log('✅ PWA icons and robots.txt copied successfully. Glob pattern warnings resolved.');
   } catch (err) {

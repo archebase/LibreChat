@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { cpSync } from 'fs';
 import { defineConfig } from 'vite';
 import { createRequire } from 'module';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -35,6 +36,25 @@ const backendURL = process.env.HOST
   : `http://localhost:${backendPort}`;
 const buildSourceMap = process.env.NODE_ENV === 'development';
 
+const publicAssets = [
+  ['public/assets', 'dist/assets'],
+  ['public/favicon.ico', 'dist/favicon.ico'],
+  ['public/images', 'dist/images'],
+  ['public/robots.txt', 'dist/robots.txt'],
+] as const;
+
+const copyPublicAssets = (): Plugin => ({
+  name: 'copy-public-assets',
+  apply: 'build',
+  writeBundle() {
+    publicAssets.forEach(([source, target]) => {
+      cpSync(path.resolve(__dirname, source), path.resolve(__dirname, target), {
+        recursive: true,
+      });
+    });
+  },
+});
+
 export default defineConfig(({ command }) => ({
   base: '',
   server: {
@@ -66,6 +86,7 @@ export default defineConfig(({ command }) => ({
       },
     },
     nodePolyfills(),
+    copyPublicAssets(),
     VitePWA({
       injectRegister: 'auto', // 'auto' | 'manual' | 'disabled'
       registerType: 'autoUpdate', // 'prompt' | 'autoUpdate'
@@ -90,11 +111,11 @@ export default defineConfig(({ command }) => ({
       },
       includeAssets: [],
       manifest: {
-        name: 'LibreChat',
-        short_name: 'LibreChat',
+        name: 'ArcheBase AI',
+        short_name: 'ArcheBase',
         display: 'standalone',
-        background_color: '#000000',
-        theme_color: '#009688',
+        background_color: '#ffffff',
+        theme_color: '#0066CC',
         icons: [
           {
             src: 'assets/favicon-32x32.png',

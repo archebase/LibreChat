@@ -1,0 +1,71 @@
+name: ArcheBase LibreChat Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - archebase
+    paths:
+      - 'api/**'
+      - 'client/**'
+      - 'config/**'
+      - 'packages/**'
+      - 'Dockerfile'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/archebase-image.yml'
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 130
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare environment
+        run: cp .env.example .env
+
+      - name: Compute build metadata
+        run: |
+          echo "BUILD_COMMIT=${{ github.sha }}" >> "$GITHUB_ENV"
+          echo "BUILD_BRANCH=${{ github.ref_name }}" >> "$GITHUB_ENV"
+          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/librechat:archebase
+            ghcr.io/${{ github.repository_owner }}/librechat:${{ github.sha }}
+          platforms: linux/amd64,linux/arm64
+          target: node
+          build-args: |
+            BUILD_COMMIT=${{ env.BUILD_COMMIT }}
+            BUILD_BRANCH=${{ env.BUILD_BRANCH }}
+            BUILD_DATE=${{ env.BUILD_DATE }}
