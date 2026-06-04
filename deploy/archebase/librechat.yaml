@@ -7,6 +7,7 @@ interface:
 
 modelSpecs:
   prioritize: true
+  addedEndpoints: ["ArcheBase"]
   list:
     - name: "ArcheBase"
       label: "ArcheBase"
