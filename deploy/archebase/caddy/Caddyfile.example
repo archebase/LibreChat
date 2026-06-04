@@ -1,0 +1,26 @@
+{
+	admin off
+}
+
+{$CHAT_DOMAIN} {
+	# Use your production certificate files here, or replace this line with
+	# Caddy's automatic HTTPS configuration for public ACME issuance.
+	tls /etc/caddy/certs/archebase.ai/fullchain.cer /etc/caddy/certs/archebase.ai/archebase.ai.key
+	encode zstd gzip
+
+	@brand_assets {
+		path /favicon.ico /manifest.webmanifest /assets/favicon*.png /assets/apple-touch-icon*.png /assets/icon-192x192.png /assets/maskable-icon.png
+	}
+
+	handle @brand_assets {
+		reverse_proxy api:3080 {
+			header_down Cache-Control "no-store, no-cache, must-revalidate"
+			header_down Pragma "no-cache"
+			header_down Expires "0"
+		}
+	}
+
+	handle {
+		reverse_proxy api:3080
+	}
+}

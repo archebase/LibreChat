@@ -1,0 +1,34 @@
+version: 1.2.8
+cache: true
+
+interface:
+  modelSelect: true
+  customWelcome: "欢迎使用 ArcheBase AI 助手"
+
+modelSpecs:
+  prioritize: true
+  list:
+    - name: "ArcheBase"
+      label: "ArcheBase"
+      default: true
+      iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
+      preset:
+        endpoint: "ArcheBase"
+        model: "deepseek-v4-pro"
+        modelLabel: "ArcheBase"
+        iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
+
+endpoints:
+  custom:
+    - name: "ArcheBase"
+      apiKey: "impersonator-sidecar"
+      baseURL: "http://impersonator:8080/v1"
+      headers:
+        X-AIFlow-Impersonate-Sub: "{{LIBRECHAT_USER_OPENIDID}}"
+      models:
+        fetch: true
+        default: ["deepseek-v4-pro", "deepseek-v4-flash"]
+      titleConvo: true
+      titleModel: "deepseek-v4-flash"
+      modelDisplayLabel: "ArcheBase"
+      iconURL: "${DOMAIN_SERVER}/images/icon-square.png"

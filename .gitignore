@@ -179,3 +179,11 @@ claude-flow
 hive-mind-prompt-*.txt
 CLAUDE.md
 .gsd
+
+# ArcheBase deployment runtime files
+deploy/archebase/.env
+!deploy/archebase/librechat.yaml
+deploy/archebase/caddy/Caddyfile
+deploy/archebase/caddy/certs/
+deploy/archebase/data/
+deploy/archebase/**/*.bak-*

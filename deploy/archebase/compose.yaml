@@ -1,0 +1,76 @@
+# ArcheBase LibreChat deployment template.
+# Copy `.env.example` to `.env` on the target host and fill secrets there.
+services:
+  api:
+    image: ghcr.io/archebase/librechat:${LIBRECHAT_IMAGE_TAG:-archebase}
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+      - meilisearch
+      - impersonator
+    env_file: .env
+    environment:
+      - CONFIG_PATH=/app/librechat.yaml
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml:ro
+      - ./images:/app/client/public/images:rw
+      - ./data/logs:/app/api/logs
+      - ./brand/favicon.ico:/app/client/dist/favicon.ico:ro
+      - ./brand/manifest.webmanifest:/app/client/dist/manifest.webmanifest:ro
+      - ./brand/logo.svg:/app/client/dist/assets/logo.svg:ro
+      - ./brand/favicon-16x16.png:/app/client/dist/assets/favicon-16x16.png:ro
+      - ./brand/favicon-32x32.png:/app/client/dist/assets/favicon-32x32.png:ro
+      - ./brand/apple-touch-icon-180x180.png:/app/client/dist/assets/apple-touch-icon-180x180.png:ro
+      - ./brand/icon-192x192.png:/app/client/dist/assets/icon-192x192.png:ro
+      - ./brand/maskable-icon.png:/app/client/dist/assets/maskable-icon.png:ro
+
+  impersonator:
+    image: node:20-alpine
+    restart: unless-stopped
+    command: node /app/server.js
+    environment:
+      - OIDC_ISSUER=${OPENID_ISSUER}
+      - OIDC_CLIENT_ID=${OPENID_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${OPENID_CLIENT_SECRET}
+      - OIDC_SCOPE=${OIDC_SCOPE:-openid}
+      - UPSTREAM=${AIFLOW_UPSTREAM}
+      - FALLBACK_SUB=${FALLBACK_SUB:-1}
+      - PORT=8080
+    volumes:
+      - ./impersonator/server.js:/app/server.js:ro
+
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    command: mongod --quiet
+    volumes:
+      - ./data/mongo:/data/db
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    restart: unless-stopped
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - MEILI_NO_ANALYTICS=true
+    volumes:
+      - ./data/meili:/meili_data
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${BIND_IP:-127.0.0.1}:443:443"
+      - "${BIND_IP:-127.0.0.1}:80:80"
+    environment:
+      - CHAT_DOMAIN=${CHAT_DOMAIN}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/certs:/etc/caddy/certs:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
