@@ -3,23 +3,34 @@ cache: true
 
 interface:
   modelSelect: true
+  memories: true
+  agents:
+    use: true
+    create: true
+    share: false
+    public: false
   customWelcome: "欢迎使用 ArcheBase AI 助手"
 
 modelSpecs:
   prioritize: true
-  addedEndpoints: ["ArcheBase"]
+  addedEndpoints: ["agents"]
   list:
     - name: "ArcheBase"
       label: "ArcheBase"
       default: true
       iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
       preset:
-        endpoint: "ArcheBase"
+        endpoint: "agents"
+        agent_id: "agent_replace_with_archebase_agent_id"
         model: "deepseek-v4-pro"
         modelLabel: "ArcheBase"
         iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
 
 endpoints:
+  agents:
+    disableBuilder: false
+    allowedProviders: ["ArcheBase"]
+    capabilities: ["actions", "tools", "chain"]
   custom:
     - name: "ArcheBase"
       apiKey: "impersonator-sidecar"
@@ -33,3 +44,17 @@ endpoints:
       titleModel: "deepseek-v4-flash"
       modelDisplayLabel: "ArcheBase"
       iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
+
+memory:
+  disabled: false
+  personalize: true
+  tokenLimit: 10000
+  charLimit: 10000
+  messageWindowSize: 5
+  validKeys: ["preferences", "work_info", "personal_info", "skills", "interests", "context"]
+  agent:
+    enabled: true
+    provider: "ArcheBase"
+    model: "deepseek-v4-flash"
+    model_parameters:
+      temperature: 0.1

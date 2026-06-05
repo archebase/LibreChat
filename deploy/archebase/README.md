@@ -8,7 +8,7 @@ secrets, certificates, logs, MongoDB data, Meilisearch data, or backups.
 
 - `compose.yaml`: Docker Compose template for LibreChat, MongoDB, Meilisearch, Caddy, and the ArcheBase impersonator sidecar.
 - `.env.example`: Required environment variables with placeholder values only.
-- `librechat.yaml`: ArcheBase LibreChat configuration with model selection enabled and public icon URLs.
+- `librechat.yaml`: ArcheBase LibreChat configuration with model selection enabled, public icon URLs, native Agents, and user memory.
 - `impersonator/server.js`: OIDC client-credentials sidecar that injects AIFlow bearer tokens at runtime.
 - `brand/` and `images/`: Public ArcheBase logo and favicon assets.
 - `caddy/Caddyfile.example`: Caddy reverse proxy example. Copy to `caddy/Caddyfile` on the host.
@@ -25,12 +25,26 @@ Fill `.env` with production secrets on the host. Keep `.env` out of git.
 
 ## Deploy
 
+Before deploying `librechat.yaml`, create the default ArcheBase Agent:
+
+1. Sign in as a user with Agent create permission.
+2. Create an Agent named `ArcheBase`.
+3. Set the Agent provider to `ArcheBase` and the model to `deepseek-v4-pro`.
+4. Grant the Agent `VIEW` access to the users, group, role, or public scope that should use Chat.
+5. Replace `agent_replace_with_archebase_agent_id` in `librechat.yaml` with the created Agent id.
+
+The Agent id is stored directly in `librechat.yaml` because LibreChat does not apply generic environment-variable expansion to this file. Keep runtime secrets in `.env`; do not commit production `.env` files.
+
 ```bash
 docker compose -f compose.yaml pull api
 docker compose -f compose.yaml up -d
 ```
 
 For production deployments behind an internal load balancer, set `BIND_IP` in `.env`.
+
+## Memory
+
+The default ArcheBase model spec uses the LibreChat `agents` endpoint so configured memories are injected into chat, and `memory.agent` uses `ArcheBase` with `deepseek-v4-flash` to accumulate memories after responses. If the default Agent is not shared with a user, LibreChat filters the Agent-backed model spec from that user's model picker and memory will not run on the direct custom endpoint path.
 
 ## Secret Rules
 
