@@ -13,17 +13,26 @@ interface:
 
 modelSpecs:
   prioritize: true
-  addedEndpoints: ["agents"]
+  addedEndpoints: ["ArcheBase", "agents"]
   list:
     - name: "ArcheBase"
       label: "ArcheBase"
       default: true
       iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
       preset:
+        endpoint: "ArcheBase"
+        model: "deepseek-v4-pro"
+        modelLabel: "ArcheBase"
+        iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
+    - name: "ArcheBase Memory"
+      label: "ArcheBase Memory"
+      description: "ArcheBase Agent with LibreChat memory"
+      iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
+      preset:
         endpoint: "agents"
         agent_id: "agent_replace_with_archebase_agent_id"
         model: "deepseek-v4-pro"
-        modelLabel: "ArcheBase"
+        modelLabel: "ArcheBase Memory"
         iconURL: "${DOMAIN_SERVER}/images/icon-square.png"
 
 endpoints:

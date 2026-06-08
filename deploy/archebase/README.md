@@ -25,7 +25,9 @@ Fill `.env` with production secrets on the host. Keep `.env` out of git.
 
 ## Deploy
 
-Before deploying `librechat.yaml`, create the default ArcheBase Agent:
+The default `ArcheBase` model spec uses the direct custom endpoint so model
+selection works immediately after deploy. To enable the memory-backed
+`ArcheBase Memory` model spec, create the default ArcheBase Agent:
 
 1. Sign in as a user with Agent create permission.
 2. Create an Agent named `ArcheBase`.
@@ -44,7 +46,7 @@ For production deployments behind an internal load balancer, set `BIND_IP` in `.
 
 ## Memory
 
-The default ArcheBase model spec uses the LibreChat `agents` endpoint so configured memories are injected into chat, and `memory.agent` uses `ArcheBase` with `deepseek-v4-flash` to accumulate memories after responses. If the default Agent is not shared with a user, LibreChat filters the Agent-backed model spec from that user's model picker and memory will not run on the direct custom endpoint path.
+`ArcheBase Memory` uses the LibreChat `agents` endpoint so configured memories are injected into chat, and `memory.agent` uses `ArcheBase` with `deepseek-v4-flash` to accumulate memories after responses. If the default Agent is not shared with a user, LibreChat filters the Agent-backed model spec from that user's model picker. The direct `ArcheBase` model spec remains visible as a no-memory fallback.
 
 ## Secret Rules
 
