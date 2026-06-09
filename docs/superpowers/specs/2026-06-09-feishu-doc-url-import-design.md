@@ -101,6 +101,10 @@ Supported:
 - `https://*.larksuite.com/wiki/<node_token>`
 - Equivalent host suffixes listed in `FEISHU_DOC_ALLOWED_HOSTS`.
 
+Example supported URL:
+
+- `https://archebase.feishu.cn/wiki/QcXRwepEGiApKykeshKc0T5KnGG`
+
 Unsupported URLs are ignored unless the message contains only unsupported Feishu links, in which case the frontend should show a clear unsupported-resource error.
 
 Wiki links are resolved to their backing document object before fetching content. If a wiki node points to a non-docx resource, the import fails for that URL with an unsupported-resource message.
