@@ -1,6 +1,7 @@
 import type { InfiniteData } from '@tanstack/react-query';
 import type * as p from '../accessPermissions';
 import type * as a from '../types/agents';
+import type * as f from '../types/files';
 import type * as s from '../schemas';
 import type * as t from '../types';
 
@@ -240,4 +241,19 @@ export type GraphTokenResponse = {
   token_type: string;
   expires_in: number;
   scope: string;
+};
+
+/* Feishu Document Import */
+export type FeishuDocImportRequest = {
+  urls: string[];
+};
+
+export type FeishuDocImportSkipped = {
+  url: string;
+  reason: string;
+};
+
+export type FeishuDocImportResponse = {
+  files: f.TFile[];
+  skipped: FeishuDocImportSkipped[];
 };

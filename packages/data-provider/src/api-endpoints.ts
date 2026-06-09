@@ -503,3 +503,6 @@ export const getAllEffectivePermissions = (resourceType: ResourceType) =>
 // SharePoint Graph API Token
 export const graphToken = (scopes: string) =>
   `${BASE_URL}/api/auth/graph-token?scopes=${encodeURIComponent(scopes)}`;
+
+// Feishu Document Import
+export const feishuDocImport = () => `${BASE_URL}/api/feishu/docs/import`;
