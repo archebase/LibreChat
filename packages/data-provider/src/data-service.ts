@@ -1301,6 +1301,13 @@ export function getGraphApiToken(params: q.GraphTokenParams): Promise<q.GraphTok
   return request.get(endpoints.graphToken(params.scopes));
 }
 
+// Feishu Document Import
+export function importFeishuDocs(
+  data: q.FeishuDocImportRequest,
+): Promise<q.FeishuDocImportResponse> {
+  return request.post(endpoints.feishuDocImport(), data);
+}
+
 export function getDomainServerBaseUrl(): string {
   return `${endpoints.apiBaseUrl()}/api`;
 }

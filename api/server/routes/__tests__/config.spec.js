@@ -159,6 +159,7 @@ describe('GET /api/config', () => {
       expect(response.body).not.toHaveProperty('bundlerURL');
       expect(response.body).not.toHaveProperty('staticBundlerURL');
       expect(response.body).not.toHaveProperty('sharePointFilePickerEnabled');
+      expect(response.body).not.toHaveProperty('feishuDocImportEnabled');
       expect(response.body).not.toHaveProperty('sharePointBaseUrl');
       expect(response.body).not.toHaveProperty('sharePointPickerGraphScope');
       expect(response.body).not.toHaveProperty('sharePointPickerSharePointScope');

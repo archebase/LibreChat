@@ -8,6 +8,7 @@ const adminGroups = require('./admin/groups');
 const adminRoles = require('./admin/roles');
 const adminUsers = require('./admin/users');
 const endpoints = require('./endpoints');
+const feishu = require('./feishu');
 const staticRoute = require('./static');
 const messages = require('./messages');
 const memories = require('./memories');
@@ -68,6 +69,7 @@ module.exports = {
   messages,
   memories,
   endpoints,
+  feishu,
   assistants,
   categories,
   staticRoute,
