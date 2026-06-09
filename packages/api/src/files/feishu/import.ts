@@ -7,6 +7,7 @@ import {
 } from 'librechat-data-provider';
 import type { FeishuDocImportResponse, TFile } from 'librechat-data-provider';
 import { createFeishuClient } from './client';
+import type { FeishuFetch } from './client';
 import { FeishuImportError } from './errors';
 
 export type FeishuImportUser = {
@@ -39,7 +40,7 @@ export type FeishuImportDeps = {
     scope: string,
   ) => Promise<{ access_token?: string }>;
   getRetentionExpiry?: () => Promise<{ expiresAt?: Date; expiredAt?: Date }>;
-  fetchImpl?: typeof fetch;
+  fetchImpl?: FeishuFetch;
 };
 
 export type FeishuImportParams = {

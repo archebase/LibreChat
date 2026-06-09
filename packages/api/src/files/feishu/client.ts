@@ -1,9 +1,11 @@
 import { FeishuImportError } from './errors';
 
+export type FeishuFetch = (url: string, init?: RequestInit) => Promise<Response>;
+
 export type FeishuClientOptions = {
   apiBaseUrl: string;
   accessToken: string;
-  fetchImpl?: typeof fetch;
+  fetchImpl?: FeishuFetch;
 };
 
 export type FeishuDocxRawContent = {
