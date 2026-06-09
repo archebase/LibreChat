@@ -3,6 +3,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { replaceSpecialVars } from 'librechat-data-provider';
 import { useChatContext, useChatFormContext, useAddedChatContext } from '~/Providers';
 import { useAuthContext } from '~/hooks/AuthContext';
+import useFeishuDocImport from '~/hooks/Messages/useFeishuDocImport';
 import { useLatestMessage } from '~/hooks/Messages/useLatestMessage';
 import { mainTextareaId } from '~/common';
 import store from '~/store';
@@ -13,15 +14,18 @@ export default function useSubmitMessage() {
   const { conversation: addedConvo } = useAddedChatContext();
   const { ask, index, getMessages, setMessages } = useChatContext();
   const latestMessage = useLatestMessage(index);
+  const { importFeishuDocsForMessage } = useFeishuDocImport();
 
   const autoSendPrompts = useRecoilValue(store.autoSendPrompts);
   const setActivePrompt = useSetRecoilState(store.activePromptByIndex(index));
 
   const submitMessage = useCallback(
-    (data?: { text: string }) => {
+    async (data?: { text: string }) => {
       if (!data) {
         return console.warn('No data provided to submitMessage');
       }
+
+      const importedFiles = await importFeishuDocsForMessage(data.text);
       const rootMessages = getMessages();
       const isLatestInRootMessages = rootMessages?.some(
         (message) => message.messageId === latestMessage?.messageId,
@@ -36,11 +40,20 @@ export default function useSubmitMessage() {
         },
         {
           addedConvo: addedConvo ?? undefined,
+          ...(importedFiles.length > 0 ? { overrideFiles: importedFiles } : {}),
         },
       );
       methods.reset();
     },
-    [ask, methods, addedConvo, setMessages, getMessages, latestMessage],
+    [
+      ask,
+      methods,
+      addedConvo,
+      setMessages,
+      getMessages,
+      latestMessage,
+      importFeishuDocsForMessage,
+    ],
   );
 
   const submitPrompt = useCallback(
