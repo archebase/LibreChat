@@ -10,9 +10,10 @@ const knownEndpointAssets: Record<string, string> = {
   [KnownEndpoints.cohere]: 'assets/cohere.png',
   [KnownEndpoints.deepseek]: 'assets/deepseek.svg',
   [KnownEndpoints.fireworks]: 'assets/fireworks.png',
-  [EModelEndpoint.google]: 'assets/google.svg',
+  archebase: '/images/icon-square.png',
+  google: 'assets/google.svg',
   [KnownEndpoints.groq]: 'assets/groq.png',
-  [KnownEndpoints.helicone]: 'assets/helicone.png',
+  [KnownEndpoints.helicone]: 'assets/helicone.svg',
   [KnownEndpoints.huggingface]: 'assets/huggingface.svg',
   [KnownEndpoints.mistral]: 'assets/mistral.png',
   [KnownEndpoints.mlx]: 'assets/mlx.png',
@@ -26,14 +27,32 @@ const knownEndpointAssets: Record<string, string> = {
   [KnownEndpoints.unify]: 'assets/unify.webp',
 };
 
-const knownEndpointClasses: Record<string, Partial<Record<string, string>>> = {
+const knownEndpointComponents = new Set<string>([KnownEndpoints.moonshot, KnownEndpoints.xai]);
+
+export function getKnownEndpointAsset(endpoint?: string | null): string {
+  if (!endpoint) {
+    return '';
+  }
+
+  return knownEndpointAssets[endpoint.toLowerCase()] ?? '';
+}
+
+export function hasKnownEndpointIcon(endpoint?: string | null): boolean {
+  if (!endpoint) {
+    return false;
+  }
+
+  const currentEndpoint = endpoint.toLowerCase();
+  return (
+    getKnownEndpointAsset(currentEndpoint) !== '' || knownEndpointComponents.has(currentEndpoint)
+  );
+}
+
+const knownEndpointClasses = {
   [KnownEndpoints.cohere]: {
     [IconContext.landing]: 'p-2',
   },
 };
-
-const archebaseEndpoint = 'archebase';
-const archebaseIconPath = '/images/icon-square.png';
 
 const getKnownClass = ({
   currentEndpoint,
@@ -84,15 +103,13 @@ function UnknownIcon({
     return <img className={className} src={iconURL} alt={`${endpoint} Icon`} />;
   }
 
-  if (currentEndpoint === archebaseEndpoint) {
-    return <img className={className} src={archebaseIconPath} alt={`${endpoint} Icon`} />;
-  }
-
-  const assetPath: string = knownEndpointAssets[currentEndpoint] ?? '';
+  const assetPath = getKnownEndpointAsset(currentEndpoint);
 
   if (!assetPath) {
     return <CustomMinimalIcon className={className} />;
   }
+
+  const assetAlt = currentEndpoint === 'archebase' ? endpoint : currentEndpoint;
 
   return (
     <img
@@ -102,7 +119,7 @@ function UnknownIcon({
         className,
       })}
       src={assetPath}
-      alt={`${currentEndpoint} Icon`}
+      alt={`${assetAlt} Icon`}
     />
   );
 }

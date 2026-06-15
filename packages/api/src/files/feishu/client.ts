@@ -19,6 +19,11 @@ export type FeishuWikiNode = {
   title?: string;
 };
 
+export type FeishuClient = {
+  fetchDocxRawContent: (documentToken: string) => Promise<FeishuDocxRawContent>;
+  resolveWikiNode: (nodeToken: string) => Promise<FeishuWikiNode>;
+};
+
 type FeishuNodePayload = {
   obj_token?: string;
   obj_type?: string;
@@ -76,7 +81,7 @@ export function createFeishuClient({
   apiBaseUrl,
   accessToken,
   fetchImpl = fetch,
-}: FeishuClientOptions) {
+}: FeishuClientOptions): FeishuClient {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
     Accept: 'application/json',

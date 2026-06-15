@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { replaceSpecialVars } from 'librechat-data-provider';
 import { useChatContext, useChatFormContext, useAddedChatContext } from '~/Providers';
-import { useAuthContext } from '~/hooks/AuthContext';
 import useFeishuDocImport from '~/hooks/Messages/useFeishuDocImport';
 import { useLatestMessage } from '~/hooks/Messages/useLatestMessage';
+import { useAuthContext } from '~/hooks/AuthContext';
 import { mainTextareaId } from '~/common';
 import store from '~/store';
 
@@ -34,7 +34,7 @@ export default function useSubmitMessage() {
         setMessages([...(rootMessages || []), latestMessage]);
       }
 
-      ask(
+      const submitted = ask(
         {
           text: data.text,
         },
@@ -43,6 +43,9 @@ export default function useSubmitMessage() {
           ...(importedFiles.length > 0 ? { overrideFiles: importedFiles } : {}),
         },
       );
+      if (submitted === false) {
+        return false;
+      }
       methods.reset();
     },
     [
