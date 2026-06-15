@@ -22,6 +22,23 @@ const ANTHROPIC_CITATION_TYPES = new Set([
   'text/html',
   'text/markdown',
 ]);
+const DEEPSEEK_TARGET_PATTERN = /^deepseek(?:[-_.]|$)/i;
+
+function targetsDeepSeek(...values: Array<string | undefined>): boolean {
+  for (const value of values) {
+    if (!value) {
+      continue;
+    }
+
+    const normalized = value.replace(/^~/, '');
+    const segments = normalized.split(/[/:]/);
+    if (segments.some((segment) => DEEPSEEK_TARGET_PATTERN.test(segment))) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 /**
  * Formats a base64-encoded document into the appropriate provider-specific block.
@@ -33,6 +50,8 @@ function formatDocumentBlock(
   content: string,
   filename: string | undefined,
   useResponsesApi: boolean | undefined,
+  endpoint: string | undefined,
+  model: string | undefined,
 ): DocumentBlock | null {
   if (provider === Providers.ANTHROPIC) {
     const document: AnthropicDocumentBlock = {
@@ -61,6 +80,10 @@ function formatDocumentBlock(
       mimeType,
       data: content,
     };
+  }
+
+  if (provider === Providers.DEEPSEEK || targetsDeepSeek(endpoint, model)) {
+    return null;
   }
 
   const resolvedFilename = filename ?? 'document';
@@ -214,6 +237,8 @@ export async function encodeAndFormatDocuments(
         content,
         file.filename,
         useResponsesApi,
+        endpoint,
+        model,
       );
       if (block) {
         result.documents.push(block);
@@ -233,6 +258,8 @@ export async function encodeAndFormatDocuments(
         content,
         file.filename,
         useResponsesApi,
+        endpoint,
+        model,
       );
       if (block) {
         result.documents.push(block);

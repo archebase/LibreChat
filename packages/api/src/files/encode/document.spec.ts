@@ -948,6 +948,29 @@ describe('encodeAndFormatDocuments - fileConfig integration', () => {
       expect(result.files).toHaveLength(1);
     });
 
+    it('should skip file blocks for DeepSeek models routed through the OpenAI provider', async () => {
+      const req = createMockRequest(15) as ServerRequest;
+      const mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      const file = createMockDocFile(1, mimeType, 'brief.docx');
+
+      const mockContent = Buffer.from('docx-binary-content').toString('base64');
+      mockedGetFileStream.mockResolvedValue({
+        file,
+        content: mockContent,
+        metadata: file,
+      });
+
+      const result = await encodeAndFormatDocuments(
+        req,
+        [file],
+        { provider: Providers.OPENAI, model: 'deepseek-v4-pro' },
+        mockStrategyFunctions,
+      );
+
+      expect(result.documents).toHaveLength(0);
+      expect(result.files).toHaveLength(0);
+    });
+
     it('should skip non-Bedrock-document types for Bedrock provider', async () => {
       const req = createMockRequest() as ServerRequest;
       const file = createMockDocFile(1, 'application/zip', 'archive.zip');
