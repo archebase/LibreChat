@@ -2055,6 +2055,28 @@ describe('Code Process', () => {
       expect(result.toolContext).not.toContain('preview');
     });
 
+    it('annotates Office input files with a bash extraction hint', async () => {
+      setupSessionInfoOk();
+      getFiles.mockResolvedValue([
+        makeFile({
+          filename: 'employee-report.docx',
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          status: 'ready',
+        }),
+      ]);
+
+      const result = await primeFiles({
+        req: { user: { id: 'user-123', role: 'USER' } },
+        tool_resources: { execute_code: { file_ids: ['fid-ready'], files: [] } },
+        agentId: 'agent-id',
+      });
+
+      expect(result.toolContext).toContain('/mnt/data/employee-report.docx');
+      expect(result.toolContext).toContain('Office document');
+      expect(result.toolContext).toContain('bash_tool');
+      expect(result.toolContext).toContain('not read_file');
+    });
+
     it('does not annotate a legacy file (no status field, back-compat)', async () => {
       /* Records pre-dating the deferred-preview flow have no `status`. They
        * MUST render exactly as before — no suffix at all. */

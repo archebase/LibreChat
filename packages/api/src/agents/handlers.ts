@@ -1157,11 +1157,31 @@ const IMAGE_EXTENSIONS_FOR_HINT = new Set([
   '.avif',
 ]);
 
+const OFFICE_EXTENSIONS_FOR_HINT = new Set([
+  '.doc',
+  '.docx',
+  '.xls',
+  '.xlsx',
+  '.ppt',
+  '.pptx',
+  '.odt',
+  '.ods',
+  '.odp',
+]);
+
 function lowercaseExtension(filePath: string): string {
   const dot = filePath.lastIndexOf('.');
   const slash = Math.max(filePath.lastIndexOf('/'), filePath.lastIndexOf('\\'));
   if (dot < 0 || dot < slash) return '';
   return filePath.slice(dot).toLowerCase();
+}
+
+function buildOfficeDocumentError(filePath: string, ext: string): string {
+  if (ext === '.docx') {
+    return `"${filePath}" is an Office document (${ext}) and cannot be read as text by \`read_file\`. Use \`bash_tool\` to extract text from the container, for example: \`unzip -p ${filePath} word/document.xml | sed -e 's/<[^>]*>/ /g'\`.`;
+  }
+
+  return `"${filePath}" is an Office document (${ext}) and cannot be read as text by \`read_file\`. Use \`bash_tool\` to inspect or extract it with the format-specific command-line tools available in the sandbox.`;
 }
 
 /**
@@ -1175,6 +1195,9 @@ function lowercaseExtension(filePath: string): string {
 function buildBinaryFileError(filePath: string, ext: string): string {
   if (IMAGE_EXTENSIONS_FOR_HINT.has(ext)) {
     return `"${filePath}" is an image file (${ext}) and cannot be read as text. The image is already attached to the conversation and visible to the user. To process it programmatically, use \`bash_tool\` (e.g. \`file ${filePath}\` for metadata, or \`python3 -c '...'\` to operate on the bytes).`;
+  }
+  if (OFFICE_EXTENSIONS_FOR_HINT.has(ext)) {
+    return buildOfficeDocumentError(filePath, ext);
   }
   return `"${filePath}" is a binary file (${ext}) and cannot be read as text by \`read_file\`. Use \`bash_tool\` to process it (e.g. \`file ${filePath}\` for metadata, or a runtime-appropriate command for the format).`;
 }
