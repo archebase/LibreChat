@@ -731,13 +731,34 @@ const getPreviewContextSuffix = (file) => {
     : ' (preview unavailable)';
 };
 
+const OFFICE_DOCUMENT_EXTENSIONS = new Set([
+  '.doc',
+  '.docx',
+  '.xls',
+  '.xlsx',
+  '.ppt',
+  '.pptx',
+  '.odt',
+  '.ods',
+  '.odp',
+]);
+
+const getOfficeDocumentContextSuffix = (file) => {
+  const ext = path.extname(file.filename ?? '').toLowerCase();
+  if (!OFFICE_DOCUMENT_EXTENSIONS.has(ext)) {
+    return '';
+  }
+
+  return ' (Office document; use bash_tool, not read_file, to inspect or extract text)';
+};
+
 const getVisibleCodeFileContextLine = (file, agentResourceIds) => {
   if (file.context === FileContext.execute_code) {
     return '';
   }
 
   const fileSuffix = agentResourceIds.has(file.file_id) ? '' : ' (attached by user)';
-  return `\n\t- /mnt/data/${file.filename}${fileSuffix}${getPreviewContextSuffix(file)}`;
+  return `\n\t- /mnt/data/${file.filename}${fileSuffix}${getPreviewContextSuffix(file)}${getOfficeDocumentContextSuffix(file)}`;
 };
 
 const appendVisibleCodeFileContext = (toolContext, contextLine) => {

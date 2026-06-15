@@ -2801,6 +2801,30 @@ describe('createToolExecuteHandler', () => {
         expect(result.errorMessage).toContain('bash_tool');
       });
 
+      it('rejects Office documents with an extraction hint instead of a generic binary error', async () => {
+        const readSandboxFile = jest.fn();
+        const handler = makeReadFileHandler({
+          codeEnvAvailable: true,
+          accessibleSkillIds: skillsInScope(),
+          readSandboxFile,
+        });
+
+        const [result] = await invokeHandler(handler, [
+          {
+            id: 'call_docx',
+            name: Constants.READ_FILE,
+            args: { file_path: '/mnt/data/employee-report.docx' },
+          },
+        ]);
+
+        expect(readSandboxFile).not.toHaveBeenCalled();
+        expect(result.status).toBe('error');
+        expect(result.errorMessage).toContain('Office document');
+        expect(result.errorMessage).toContain('bash_tool');
+        expect(result.errorMessage).toContain('unzip -p');
+        expect(result.errorMessage).toContain('word/document.xml');
+      });
+
       it('is case-insensitive on the extension match (PNG vs .png)', async () => {
         const readSandboxFile = jest.fn();
         const handler = makeReadFileHandler({
